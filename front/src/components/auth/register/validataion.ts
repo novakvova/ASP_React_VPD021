@@ -5,4 +5,5 @@ export const RegisterSchema = yup.object({
         .string()
         .required("Поле пошта є обов'язковим!")
         .email("Вкажіть приавльно пошту"),
+    photo: yup.string().required("Оберіть фото. Щоб обрати натисніть на зображення!")
 });

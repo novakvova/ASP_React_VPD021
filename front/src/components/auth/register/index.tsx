@@ -26,7 +26,7 @@ const RegisterPage: React.FC = () => {
   });
 
   //Деструктуризація
-  const { errors, touched, handleSubmit, handleChange } = formik;
+  const { errors, touched, handleSubmit, handleChange, setFieldValue } = formik;
 
   return (
     <div className="row">
@@ -35,7 +35,12 @@ const RegisterPage: React.FC = () => {
         <FormikProvider value={formik}>
           <Form onSubmit={handleSubmit}>
             
-            <CropperDialog />
+            <CropperDialog 
+              onChange={setFieldValue}
+              field="photo"
+              error={errors.photo}
+              touched={touched.photo}
+            />
 
             <div className="mb-3">
               <label htmlFor="email" className="form-label">

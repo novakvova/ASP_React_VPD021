@@ -3,9 +3,17 @@ import classNames from "classnames";
 import Cropper from "cropperjs";
 import "cropperjs/dist/cropper.css";
 import "./style.css";
+import { ICropperDialog } from "./types";
 
 
-const CropperDialog: React.FC = () => {
+const CropperDialog: React.FC<ICropperDialog> = ({
+  onChange,
+  field,
+  error,
+  touched,
+  value,
+  aspectRation=1/1
+}) => {
   const [currentImage, setCurrentImage] = useState<string>(
     "https://s.sweetydate.com/blog/ukr-women-guide/ukr-ladies1%20title.jpg"
   );
@@ -37,7 +45,7 @@ const CropperDialog: React.FC = () => {
     {
         const cropper = new Cropper(imgRef.current as HTMLImageElement, {
             viewMode: 1,
-            aspectRatio: 1/1,
+            aspectRatio: aspectRation,
             preview: imgPrevRef.current
         });
         setCropperObj(cropper);
@@ -46,7 +54,10 @@ const CropperDialog: React.FC = () => {
 
   const handleCroppedImage = () => {
     const base64 = cropperObj?.getCroppedCanvas().toDataURL() as string;
-    console.log("base64", base64);
+    //console.log("base64", base64);
+    setCurrentImage(base64);
+    toggleModal();
+    onChange(field, base64);
   }
 
   return (
@@ -64,6 +75,12 @@ const CropperDialog: React.FC = () => {
         id="image" 
         onChange={handleSelectImage}
         />
+
+    {error && touched && (
+        <div className="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
 
       <div className={classNames("modal", {"custom-modal": show})}>
         <div className="modal-dialog modal-lg">
