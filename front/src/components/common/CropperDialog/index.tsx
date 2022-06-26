@@ -1,13 +1,53 @@
-import React, { useState } from "react";
+import React, { LegacyRef, useEffect, useRef, useState } from "react";
 import classNames from "classnames";
+import Cropper from "cropperjs";
+import "cropperjs/dist/cropper.css";
 import "./style.css";
+
 
 const CropperDialog: React.FC = () => {
   const [currentImage, setCurrentImage] = useState<string>(
     "https://s.sweetydate.com/blog/ukr-women-guide/ukr-ladies1%20title.jpg"
   );
+  const [show, setShow] = useState<boolean>(false);
 
-  const [show, setShow] = useState<boolean>(true);
+  const [image, setImage] = useState<string>("");
+  const imgRef = useRef<HTMLImageElement>(); //посилання на тег img в модалці
+  const imgPrevRef = useRef<HTMLImageElement>(); //попередній перегляд фото
+  const [cropperObj, setCropperObj] = useState<Cropper>();
+
+  const handleSelectImage = (e: React.FormEvent<HTMLInputElement>) => {
+    let file = (e.currentTarget.files as FileList)[0];
+    if(file) {
+        const url = URL.createObjectURL(file);
+        console.log("select image", url);
+        toggleModal();
+        setImage(url);
+        cropperObj?.replace(url);
+    }
+    e.currentTarget.value=""; //обнуляємо значення
+  }
+
+  const toggleModal = () => {
+    setShow((prev)=> !prev);
+  }
+
+  useEffect(() => {
+    if(imgRef.current)
+    {
+        const cropper = new Cropper(imgRef.current as HTMLImageElement, {
+            viewMode: 1,
+            aspectRatio: 1/1,
+            preview: imgPrevRef.current
+        });
+        setCropperObj(cropper);
+    }
+  },[]);
+
+  const handleCroppedImage = () => {
+    const base64 = cropperObj?.getCroppedCanvas().toDataURL() as string;
+    console.log("base64", base64);
+  }
 
   return (
     <>
@@ -19,10 +59,14 @@ const CropperDialog: React.FC = () => {
           alt="Оберіть фото"
         />
       </label>
-      <input type="file" className="d-none" id="image" />
+      <input type="file" 
+        className="d-none" 
+        id="image" 
+        onChange={handleSelectImage}
+        />
 
       <div className={classNames("modal", {"custom-modal": show})}>
-        <div className="modal-dialog">
+        <div className="modal-dialog modal-lg">
           <div className="modal-content">
             <div className="modal-header">
               <h5 className="modal-title">Редагування фото</h5>
@@ -31,20 +75,46 @@ const CropperDialog: React.FC = () => {
                 className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
+                onClick={toggleModal}
               ></button>
             </div>
             <div className="modal-body">
-              <p>Modal body text goes here.</p>
+              <div className="row">
+                <div className="col-md-8 col-lg-9">
+                    <div className="d-flex justify-content-center">
+                        <img src={image} 
+                            alt="Вибрана фотка" 
+                            width="100%"
+                            ref={imgRef as LegacyRef<HTMLImageElement>}
+                            />
+                    </div>
+                </div>
+                <div className="col-md-4 col-lg-3">
+                    <div className="d-flex justify-content-center">
+                        <div
+                            ref={imgPrevRef as LegacyRef<HTMLImageElement>}
+                            style={{
+                                height: "150px",
+                                width: "150px",
+                                border: "1px solid silver",
+                                overflow: "hidden"
+                            }}>
+
+                        </div>
+                    </div>
+                </div>
+              </div>
             </div>
             <div className="modal-footer">
               <button
                 type="button"
                 className="btn btn-secondary"
                 data-bs-dismiss="modal"
+                onClick={toggleModal}
               >
                 Скасувать
               </button>
-              <button type="button" className="btn btn-primary">
+              <button type="button" className="btn btn-primary" onClick={handleCroppedImage}>
                 Обрати фото
               </button>
             </div>
