@@ -1,3 +1,4 @@
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using System.Reflection;
@@ -20,8 +21,15 @@ builder.Services.AddSwaggerGen(c =>
     c.IncludeXmlComments(fileDoc);
 });
 builder.Services.AddAutoMapper(typeof(AppMapProfile));
+builder.Services.AddFluentValidation(x => x.RegisterValidatorsFromAssemblyContaining<Program>());
+
+builder.Services.AddCors();
 
 var app = builder.Build();
+
+app.UseCors(options =>
+                options.AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader());
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

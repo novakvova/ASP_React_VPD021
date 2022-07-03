@@ -10,6 +10,11 @@ namespace WebBackend.Mapper
         {
             CreateMap<CategoryCreateVM, CategoryEntity>()
                 .ForMember(x => x.Image, opt => opt.Ignore());
+
+            CreateMap<CategoryEntity, CategoryItemVM>()
+                .ForMember(x => x.Image, opt => opt.MapFrom(x=>$"/images/{x.Image}"));
+
+
         }
     }
 }

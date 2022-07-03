@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Drawing.Imaging;
+using WebBackend.Data;
 using WebBackend.Data.Entities;
 using WebBackend.Helpers;
 using WebBackend.Models;
@@ -13,10 +14,11 @@ namespace WebBackend.Controllers
     public class CategoriesController : ControllerBase
     {
         private readonly IMapper _mapper;
-
-        public CategoriesController(IMapper mapper)
+        private readonly AppEFContext _context;
+        public CategoriesController(IMapper mapper, AppEFContext context)
         {
             _mapper = mapper;
+            _context = context;
         }
 
         [HttpPost("create")]
@@ -33,8 +35,18 @@ namespace WebBackend.Controllers
             img.Save(dirSave, ImageFormat.Jpeg);
 
             var category = _mapper.Map<CategoryEntity>(model);
-
+            category.Image = fileName;
+            _context.Categories.Add(category);
+            _context.SaveChanges();
             return Ok();
+        }
+
+        [HttpGet("list")]
+        public IActionResult List()
+        {
+            var list = _context.Categories
+                .Select(x => _mapper.Map<CategoryItemVM>(x)).ToList();
+            return Ok(list);
         }
     }
 }

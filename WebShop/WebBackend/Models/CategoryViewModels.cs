@@ -14,4 +14,21 @@
         //Фото передається Base64
         public string ImageBase64 { get; set; }
     }
+
+    public class CategoryItemVM
+    {
+        /// <summary>
+        /// Id - категорії
+        /// </summary>
+        public int Id { get; set; }
+        /// <summary>
+        /// Назва категорії
+        /// </summary>
+        public string Name { get; set; }
+        /// <summary>
+        /// Фото категорії
+        /// </summary>
+        //Фото передається Base64
+        public string Image { get; set; }
+    }
 }
