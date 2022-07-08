@@ -4,6 +4,8 @@ import classNames from "classnames";
 import { IRegister } from "./types";
 import { RegisterSchema } from "./validataion";
 import CropperDialog from "../../common/CropperDialog";
+import { useDispatch } from "react-redux";
+import { AuthActionTypes } from "../store/types";
 
 const RegisterPage: React.FC = () => {
   const initialValues: IRegister = {
@@ -15,8 +17,17 @@ const RegisterPage: React.FC = () => {
     confirmPassword: "",
     password: "",
   };
+  const dispatch = useDispatch();
   const onHandleSubmit = async (values: IRegister) => {
     console.log("Send server form", values);
+    dispatch({
+      type: AuthActionTypes.LOGIN_AUTH,
+      payload: {
+        email: values.email,
+        image: values.photo,
+        roles: "Кабан"
+      }
+    })
   };
 
   const formik = useFormik({
